@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parchi to Billing — App Proposal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #f8fafc; --bg2: #ffffff; --bg3: #f1f5f9;
+    --text: #0f172a; --text2: #334155; --text3: #64748b;
+    --blue: #2563eb; --blue-light: #eff6ff; --blue-dark: #1e40af;
+    --green: #16a34a; --green-light: #f0fdf4; --green-dark: #166534;
+    --red: #dc2626; --red-light: #fef2f2;
+    --purple: #7c3aed; --purple-light: #f5f3ff;
+    --orange: #ea580c; --orange-light: #fff7ed;
+    --border: #e2e8f0; --border2: #cbd5e1;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.08), 0 4px 10px rgba(0,0,0,0.04);
+    --shadow-xl: 0 20px 50px rgba(0,0,0,0.12);
+    --radius: 16px; --radius-sm: 10px; --radius-xs: 6px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+/* Hero */
+.hero {
+    background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 50%, #1a1a2e 100%);
+    color: #fff; padding: 80px 24px 60px; text-align: center; position: relative; overflow: hidden;
+}
+.hero::before {
+    content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+    background: radial-gradient(circle at 30% 50%, rgba(37,99,235,0.15) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(124,58,237,0.1) 0%, transparent 50%);
+}
+.hero * { position: relative; }
+.hero-badge { display: inline-block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); padding: 6px 16px; border-radius: 20px; font-size: 13px; color: #94a3b8; margin-bottom: 20px; }
+.hero h1 { font-size: 44px; font-weight: 900; line-height: 1.15; margin-bottom: 16px; }
+.hero h1 span { background: linear-gradient(135deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.hero p { font-size: 18px; color: #94a3b8; max-width: 600px; margin: 0 auto; }
+
+/* Section */
+.section { padding: 64px 0; }
+.section-header { text-align: center; margin-bottom: 48px; }
+.section-header h2 { font-size: 32px; font-weight: 800; margin-bottom: 10px; color: var(--text); }
+.section-header p { font-size: 16px; color: var(--text3); max-width: 600px; margin: 0 auto; }
+.section-divider { height: 1px; background: var(--border); margin: 0; }
+
+/* Process comparison */
+.process-grid { display: grid; grid-template-columns: 1fr 60px 1fr; gap: 0; align-items: start; }
+.process-col { }
+.process-col h3 { font-size: 18px; font-weight: 800; margin-bottom: 20px; padding: 12px 20px; border-radius: var(--radius-sm); text-align: center; }
+.process-col.old h3 { background: var(--red-light); color: var(--red); border: 1px solid #fecaca; }
+.process-col.new h3 { background: var(--green-light); color: var(--green-dark); border: 1px solid #bbf7d0; }
+.process-arrow-col { display: flex; align-items: center; justify-content: center; padding-top: 60px; }
+.process-arrow-col span { font-size: 28px; color: var(--text3); }
+
+.p-step { display: flex; gap: 14px; margin-bottom: 14px; align-items: flex-start; }
+.p-step-num {
+    min-width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 13px; font-weight: 800; flex-shrink: 0; margin-top: 2px;
+}
+.old .p-step-num { background: #fee2e2; color: var(--red); }
+.new .p-step-num { background: #dcfce7; color: var(--green-dark); }
+.p-step-num.auto { background: #ede9fe; color: var(--purple); }
+.p-step-num.eliminated { background: #fecaca; color: #991b1b; text-decoration: line-through; opacity: 0.5; }
+.p-step-content { }
+.p-step-title { font-size: 14px; font-weight: 700; color: var(--text); }
+.p-step-desc { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.p-step.struck { opacity: 0.35; }
+.p-step.struck .p-step-title { text-decoration: line-through; }
+
+.eliminated-tag { display: inline-block; background: #fecaca; color: #991b1b; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; margin-left: 6px; text-transform: uppercase; }
+.auto-tag { display: inline-block; background: #ede9fe; color: #5b21b6; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; margin-left: 6px; text-transform: uppercase; }
+.same-tag { display: inline-block; background: #e0f2fe; color: #0369a1; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; margin-left: 6px; text-transform: uppercase; }
+
+/* Stats row */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 48px 0; }
+.stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 20px; text-align: center; }
+.stat-card .num { font-size: 36px; font-weight: 900; }
+.stat-card .num.red { color: var(--red); }
+.stat-card .num.green { color: var(--green); }
+.stat-card .num.blue { color: var(--blue); }
+.stat-card .num.purple { color: var(--purple); }
+.stat-card .label { font-size: 13px; color: var(--text3); margin-top: 4px; }
+
+/* New flow */
+.flow-visual { display: flex; align-items: center; gap: 0; justify-content: center; flex-wrap: wrap; margin: 40px 0; padding: 32px 20px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); }
+.flow-item { text-align: center; padding: 16px 20px; min-width: 140px; }
+.flow-item .fi-icon { font-size: 32px; margin-bottom: 8px; }
+.flow-item .fi-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.flow-item .fi-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.flow-item.field { background: var(--blue-light); border-radius: var(--radius-sm); margin: 4px; }
+.flow-item.app { background: var(--green-light); border-radius: var(--radius-sm); margin: 4px; }
+.flow-item.auto { background: var(--purple-light); border-radius: var(--radius-sm); margin: 4px; }
+.flow-arrow { color: var(--border2); font-size: 24px; padding: 0 4px; }
+
+/* App mockup - phone style */
+.phone-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 40px 0; }
+.phone-wrap { }
+.phone-wrap h3 { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.phone-wrap h3 .badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 12px; }
+.phone-wrap h3 .badge-core { background: var(--green-light); color: var(--green-dark); }
+.phone-wrap h3 .badge-auto { background: var(--purple-light); color: var(--purple); }
+.phone-wrap h3 .badge-view { background: var(--blue-light); color: var(--blue); }
+
+.phone {
+    background: #1a1a2e; border-radius: 28px; padding: 12px;
+    box-shadow: var(--shadow-xl), 0 0 0 1px rgba(0,0,0,0.1);
+}
+.phone-screen {
+    background: var(--bg2); border-radius: 18px; overflow: hidden;
+    border: 1px solid var(--border);
+}
+.phone-statusbar { background: var(--bg2); padding: 8px 16px; display: flex; justify-content: space-between; font-size: 11px; color: var(--text3); font-weight: 600; }
+.phone-header { padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.phone-header h4 { font-size: 16px; font-weight: 800; color: var(--text); }
+.phone-header .ph-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.phone-body { padding: 0; }
+
+/* Dashboard screen */
+.d-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); }
+.d-stat { background: var(--bg2); padding: 14px 16px; text-align: center; }
+.d-stat-num { font-size: 24px; font-weight: 900; color: var(--text); }
+.d-stat-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+.d-alerts { padding: 14px 16px; }
+.d-alert { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; margin-bottom: 6px; font-size: 12px; color: #92400e; font-weight: 500; }
+.d-chart { padding: 14px 16px; }
+.d-chart-title { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+.d-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.d-bar-label { font-size: 11px; color: var(--text2); width: 50px; text-align: right; font-weight: 600; }
+.d-bar { height: 18px; border-radius: 4px; position: relative; }
+.d-bar span { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-size: 10px; font-weight: 700; color: #fff; }
+
+/* Form screen */
+.f-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px; margin-bottom: 10px; }
+.f-row.full { grid-template-columns: 1fr; }
+.f-group {}
+.f-label { font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 3px; }
+.f-input {
+    width: 100%; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 6px;
+    font-size: 13px; color: var(--text); background: var(--bg); font-family: inherit;
+}
+.f-input.filled { border-color: var(--blue); background: #fff; }
+.f-input.select::after { content: ' \25BE'; }
+.f-auto-box {
+    margin: 12px 16px; padding: 12px 14px; background: var(--green-light); border: 1px solid #bbf7d0;
+    border-radius: 8px; font-size: 11px; color: var(--green-dark); line-height: 1.6;
+}
+.f-btn-row { display: flex; gap: 8px; padding: 14px 16px; border-top: 1px solid var(--border); }
+.f-btn {
+    flex: 1; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: 700;
+    text-align: center; border: none; font-family: inherit;
+}
+.f-btn.primary { background: var(--blue); color: #fff; }
+.f-btn.secondary { background: var(--bg3); color: var(--text2); }
+
+/* Table screen */
+.t-filters { display: flex; gap: 6px; padding: 10px 16px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.t-filter { padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px; color: var(--text2); background: var(--bg); }
+.t-filter.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+.t-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.t-table th { background: var(--bg3); color: var(--text3); padding: 8px 10px; text-align: left; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; font-size: 10px; border-bottom: 2px solid var(--border); }
+.t-table td { padding: 10px; border-bottom: 1px solid var(--border); color: var(--text2); }
+.t-table tr:hover td { background: var(--bg3); }
+.t-table .total td { font-weight: 800; color: var(--text); background: var(--green-light); }
+.t-status { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; }
+.t-status.pending { background: #fef3c7; color: #92400e; }
+.t-status.approved { background: #dcfce7; color: #166534; }
+.t-status.paid { background: #dbeafe; color: #1e40af; }
+.t-status.draft { background: var(--bg3); color: var(--text3); }
+.t-footer { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; border-top: 1px solid var(--border); background: var(--bg3); }
+.t-footer-text { font-size: 11px; color: var(--text3); }
+
+/* Attendance grid */
+.att-grid { padding: 10px; overflow-x: auto; }
+.att-table { width: 100%; border-collapse: collapse; font-size: 10px; text-align: center; }
+.att-table th { padding: 6px 4px; font-weight: 700; color: var(--text3); background: var(--bg3); border-bottom: 2px solid var(--border); }
+.att-table td { padding: 6px 4px; border-bottom: 1px solid var(--border); }
+.att-table .name { text-align: left; font-weight: 700; color: var(--text); font-size: 11px; }
+.att-p { color: var(--green); font-weight: 800; }
+.att-a { color: #dc2626; font-weight: 600; }
+.att-total { font-weight: 800; color: var(--text); background: var(--bg3); }
+
+/* Report grid */
+.r-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 12px 16px; }
+.r-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; text-align: center; transition: all 0.15s; cursor: pointer; }
+.r-card:hover { border-color: var(--blue); background: var(--blue-light); transform: translateY(-1px); }
+.r-card .r-icon { font-size: 24px; margin-bottom: 6px; }
+.r-card .r-title { font-size: 11px; font-weight: 700; color: var(--text); }
+.r-card .r-desc { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+/* Full width mockup */
+.wide-mockup {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+    overflow: hidden; box-shadow: var(--shadow-lg); margin: 32px 0;
+}
+.wide-mockup-bar {
+    background: var(--bg3); padding: 10px 16px; display: flex; align-items: center; gap: 6px;
+    border-bottom: 1px solid var(--border);
+}
+.wm-dot { width: 10px; height: 10px; border-radius: 50%; }
+.wm-dot.r { background: #ef4444; } .wm-dot.y { background: #eab308; } .wm-dot.g { background: #22c55e; }
+.wm-title { margin-left: 10px; font-size: 12px; color: var(--text3); font-weight: 500; }
+.wide-mockup-body { padding: 0; }
+
+/* What stays / changes */
+.changes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 32px 0; }
+.change-box { border-radius: var(--radius); padding: 28px; }
+.change-box.stays { background: var(--blue-light); border: 1px solid #bfdbfe; }
+.change-box.goes { background: var(--orange-light); border: 1px solid #fed7aa; }
+.change-box h3 { font-size: 16px; font-weight: 800; margin-bottom: 16px; }
+.change-box.stays h3 { color: var(--blue-dark); }
+.change-box.goes h3 { color: var(--orange); }
+.change-item { display: flex; gap: 10px; margin-bottom: 10px; font-size: 13px; }
+.change-item .ci-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.change-item .ci-text { color: var(--text2); }
+.change-item .ci-text strong { color: var(--text); }
+
+/* CTA */
+.cta-section { background: linear-gradient(135deg, #1e3a5f, #0f172a); color: #fff; padding: 60px 24px; text-align: center; margin-top: 48px; }
+.cta-section h2 { font-size: 28px; font-weight: 900; margin-bottom: 12px; }
+.cta-section p { color: #94a3b8; font-size: 16px; }
+
+/* Scroll section nav */
+.toc { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.toc-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; display: flex; gap: 0; overflow-x: auto; }
+.toc a { padding: 14px 20px; font-size: 13px; font-weight: 600; color: var(--text3); text-decoration: none; white-space: nowrap; border-bottom: 2px solid transparent; transition: all 0.15s; }
+.toc a:hover { color: var(--blue); border-bottom-color: var(--blue); }
+
+@media (max-width: 768px) {
+    .hero h1 { font-size: 28px; }
+    .process-grid { grid-template-columns: 1fr; gap: 32px; }
+    .process-arrow-col { display: none; }
+    .phone-grid { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .changes-grid { grid-template-columns: 1fr; }
+    .flow-visual { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); }
+    .toc-inner { padding: 0 12px; }
+}
+
+@media print {
+    .toc { position: static; }
+    .phone { box-shadow: none; border: 2px solid #ccc; }
+    .hero { padding: 40px 24px 30px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+    <div class="hero-badge">Proposal Document</div>
+    <h1>Parchi to Billing<br><span>App Proposal</span></h1>
+    <p>Replace register books, manual Excel, and paper Hajri cards with one simple app. Field work stays the same &mdash; only the office side gets digitalized.</p>
+</div>
+
+<!-- NAV -->
+<nav class="toc">
+    <div class="toc-inner">
+        <a href="#comparison">Old vs New Process</a>
+        <a href="#newflow">New Flow</a>
+        <a href="#changes">What Changes</a>
+        <a href="#app">App Screens</a>
+        <a href="#billing-screen">Billing</a>
+        <a href="#reports-screen">Reports</a>
+    </div>
+</nav>
+
+<!-- ============================================ -->
+<!-- SECTION 1: OLD vs NEW PROCESS COMPARISON     -->
+<!-- ============================================ -->
+<div class="section" id="comparison">
+    <div class="container">
+        <div class="section-header">
+            <h2>Old Process vs. New Process</h2>
+            <p>14 manual steps with 5+ people reduced to 4 steps with 3 people. Everything after app entry is automatic.</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="num red">14</div>
+                <div class="label">Old Process Steps</div>
+            </div>
+            <div class="stat-card">
+                <div class="num green">4</div>
+                <div class="label">New Process Steps</div>
+            </div>
+            <div class="stat-card">
+                <div class="num blue">5+</div>
+                <div class="label">People (Old)</div>
+            </div>
+            <div class="stat-card">
+                <div class="num purple">3</div>
+                <div class="label">People (New)</div>
+            </div>
+        </div>
+
+        <!-- Side by side -->
+        <div class="process-grid">
+            <!-- OLD -->
+            <div class="process-col old">
+                <h3>Current Process (Old)</h3>
+
+                <div class="p-step"><div class="p-step-num">1</div><div class="p-step-content"><div class="p-step-title">Parchi Created on Field <span class="same-tag">Same</span></div><div class="p-step-desc">Manager creates parchi every 24 hrs (Hussain / Suresh Bhai)</div></div></div>
+
+                <div class="p-step"><div class="p-step-num">2</div><div class="p-step-content"><div class="p-step-title">1st Copy to Operator <span class="same-tag">Same</span></div><div class="p-step-desc">Operator keeps as proof of 24-hour work</div></div></div>
+
+                <div class="p-step"><div class="p-step-num">3</div><div class="p-step-content"><div class="p-step-title">Authorized Person Checks <span class="same-tag">Same</span></div><div class="p-step-desc">Verifies movements, hours, diesel, trips on site</div></div></div>
+
+                <div class="p-step"><div class="p-step-num">4</div><div class="p-step-content"><div class="p-step-title">Hajri Card Filled <span class="same-tag">Same</span></div><div class="p-step-desc">Authorized person fills operator attendance card</div></div></div>
+
+                <div class="p-step"><div class="p-step-num">5</div><div class="p-step-content"><div class="p-step-title">Allowance Paid <span class="same-tag">Same</span></div><div class="p-step-desc">650/600/700 transferred to operator bank</div></div></div>
+
+                <div class="p-step struck"><div class="p-step-num eliminated">6</div><div class="p-step-content"><div class="p-step-title">2nd Copy to Register Staff <span class="eliminated-tag">Eliminated</span></div><div class="p-step-desc">Sunil &amp; Omprakash get 2nd copy</div></div></div>
+
+                <div class="p-step struck"><div class="p-step-num eliminated">7</div><div class="p-step-content"><div class="p-step-title">Register Book Entry <span class="eliminated-tag">Eliminated</span></div><div class="p-step-desc">Same data re-written in register manually</div></div></div>
+
+                <div class="p-step struck"><div class="p-step-num eliminated">8</div><div class="p-step-content"><div class="p-step-title">Evening Report to Office <span class="eliminated-tag">Eliminated</span></div><div class="p-step-desc">Register handed to office staff each evening</div></div></div>
+
+                <div class="p-step struck"><div class="p-step-num eliminated">9</div><div class="p-step-content"><div class="p-step-title">Excel Data Entry <span class="eliminated-tag">Eliminated</span></div><div class="p-step-desc">Office staff types same data AGAIN into Excel</div></div></div>
+
+                <div class="p-step struck"><div class="p-step-num eliminated">10</div><div class="p-step-content"><div class="p-step-title">Month-end Hajri Collection <span class="eliminated-tag">Eliminated</span></div><div class="p-step-desc">Collect all paper cards from authorized persons</div></div></div>
+
+                <div class="p-step struck"><div class="p-step-num eliminated">11</div><div class="p-step-content"><div class="p-step-title">Manual Hajri Cross-check <span class="eliminated-tag">Eliminated</span></div><div class="p-step-desc">Match each Hajri card with Excel rows by name</div></div></div>
+
+                <div class="p-step struck"><div class="p-step-num eliminated">12</div><div class="p-step-content"><div class="p-step-title">Manager &amp; Accountant Confirmation <span class="eliminated-tag">Eliminated</span></div><div class="p-step-desc">Phone calls for advances, deductions</div></div></div>
+
+                <div class="p-step struck"><div class="p-step-num eliminated">13</div><div class="p-step-content"><div class="p-step-title">Manual Salary Sheet <span class="eliminated-tag">Eliminated</span></div><div class="p-step-desc">Built by hand in Excel &mdash; takes days</div></div></div>
+
+                <div class="p-step struck"><div class="p-step-num eliminated">14</div><div class="p-step-content"><div class="p-step-title">Manual Billing <span class="eliminated-tag">Eliminated</span></div><div class="p-step-desc">Hours &amp; MT billing calculated manually in Excel</div></div></div>
+            </div>
+
+            <!-- Arrow -->
+            <div class="process-arrow-col"><span>&rarr;</span></div>
+
+            <!-- NEW -->
+            <div class="process-col new">
+                <h3>New Process (With App)</h3>
+
+                <div class="p-step"><div class="p-step-num">1</div><div class="p-step-content"><div class="p-step-title">Parchi Created on Field <span class="same-tag">Same</span></div><div class="p-step-desc">No change. Manager creates parchi on site as before</div></div></div>
+
+                <div class="p-step"><div class="p-step-num">2</div><div class="p-step-content"><div class="p-step-title">1st Copy to Operator <span class="same-tag">Same</span></div><div class="p-step-desc">Operator keeps proof. No change</div></div></div>
+
+                <div class="p-step"><div class="p-step-num">3</div><div class="p-step-content"><div class="p-step-title">Authorized Person Checks <span class="same-tag">Same</span></div><div class="p-step-desc">On-ground verification. Can't be digitized</div></div></div>
+
+                <div class="p-step" style="padding: 16px; background: var(--green-light); border: 2px solid #86efac; border-radius: 12px;">
+                    <div class="p-step-num" style="background: var(--green); color: #fff;">4</div>
+                    <div class="p-step-content">
+                        <div class="p-step-title" style="font-size: 15px;">Office Staff Enters Parchi in App</div>
+                        <div class="p-step-desc">Direct entry from parchi &mdash; Operator, Equipment, Cargo, Hours, Trips, Diesel, Shift. This is the ONLY manual step.</div>
+                    </div>
+                </div>
+
+                <div style="margin: 16px 0 8px 0; padding: 16px 20px; background: var(--purple-light); border: 1px solid #c4b5fd; border-radius: 12px;">
+                    <div style="font-size: 13px; font-weight: 800; color: var(--purple); margin-bottom: 12px;">Everything below is AUTOMATIC:</div>
+
+                    <div class="p-step"><div class="p-step-num auto">A</div><div class="p-step-content"><div class="p-step-title">Attendance Auto-Recorded <span class="auto-tag">Auto</span></div><div class="p-step-desc">Operator marked present for that date &mdash; no Hajri card needed</div></div></div>
+
+                    <div class="p-step"><div class="p-step-num auto">B</div><div class="p-step-content"><div class="p-step-title">Allowance Auto-Calculated <span class="auto-tag">Auto</span></div><div class="p-step-desc">Amount calculated from rules, queued for approval</div></div></div>
+
+                    <div class="p-step"><div class="p-step-num auto">C</div><div class="p-step-content"><div class="p-step-title">Salary Sheet Auto-Generated <span class="auto-tag">Auto</span></div><div class="p-step-desc">Days worked, hours, gross, deductions, net &mdash; all calculated</div></div></div>
+
+                    <div class="p-step"><div class="p-step-num auto">D</div><div class="p-step-content"><div class="p-step-title">Billing Auto-Generated <span class="auto-tag">Auto</span></div><div class="p-step-desc">TON AMT + HOUR AMT using configured rates. Party-wise bills ready</div></div></div>
+
+                    <div class="p-step"><div class="p-step-num auto">E</div><div class="p-step-content"><div class="p-step-title">All 8 Reports Instantly <span class="auto-tag">Auto</span></div><div class="p-step-desc">Cargo-wise, Diesel avg, Productivity, Machine utilization &mdash; one click</div></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 2: NEW FLOW VISUAL                   -->
+<!-- ============================================ -->
+<div class="section" id="newflow">
+    <div class="container">
+        <div class="section-header">
+            <h2>New Process Flow</h2>
+            <p>From field parchi to auto-generated billing in one straight line</p>
+        </div>
+
+        <div class="flow-visual">
+            <div class="flow-item field">
+                <div class="fi-icon">&#x1F4DD;</div>
+                <div class="fi-title">Parchi Created</div>
+                <div class="fi-sub">on Field (24 hrs)</div>
+            </div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-item field">
+                <div class="fi-icon">&#x1F4C4;</div>
+                <div class="fi-title">1st Copy</div>
+                <div class="fi-sub">to Operator</div>
+            </div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-item field">
+                <div class="fi-icon">&#x2705;</div>
+                <div class="fi-title">Authorized Check</div>
+                <div class="fi-sub">Verifies on Site</div>
+            </div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-item app">
+                <div class="fi-icon">&#x1F4F1;</div>
+                <div class="fi-title">Enter in App</div>
+                <div class="fi-sub">Single Data Entry</div>
+            </div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-item auto">
+                <div class="fi-icon">&#x26A1;</div>
+                <div class="fi-title">Auto: Attendance</div>
+                <div class="fi-sub">+ Allowance Queue</div>
+            </div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-item auto">
+                <div class="fi-icon">&#x1F4CA;</div>
+                <div class="fi-title">Auto: Salary</div>
+                <div class="fi-sub">+ Billing + Reports</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 3: WHAT CHANGES                      -->
+<!-- ============================================ -->
+<div class="section" id="changes">
+    <div class="container">
+        <div class="section-header">
+            <h2>What Stays &amp; What Goes</h2>
+            <p>Field work is completely unchanged. Only office-side manual work gets replaced by the app.</p>
+        </div>
+
+        <div class="changes-grid">
+            <div class="change-box stays">
+                <h3>&#x2705; Stays the Same</h3>
+                <div class="change-item"><span class="ci-icon">&#x1F4DD;</span><div class="ci-text"><strong>Parchi (Physical Slip)</strong> &mdash; created on field every 24 hrs. Operators need tangible proof</div></div>
+                <div class="change-item"><span class="ci-icon">&#x1F4C4;</span><div class="ci-text"><strong>1st Copy to Operator</strong> &mdash; trust &amp; transparency. Proof of work</div></div>
+                <div class="change-item"><span class="ci-icon">&#x2705;</span><div class="ci-text"><strong>Authorized Person Checks</strong> &mdash; human verification on ground</div></div>
+                <div class="change-item"><span class="ci-icon">&#x1F4B5;</span><div class="ci-text"><strong>Daily Allowance Payment</strong> &mdash; continues as-is, just tracked in app</div></div>
+                <div class="change-item"><span class="ci-icon">&#x1F504;</span><div class="ci-text"><strong>Manager Alternating Schedule</strong> &mdash; Mon/Wed/Fri &amp; Tue/Thu/Sat rotation</div></div>
+            </div>
+            <div class="change-box goes">
+                <h3>&#x274C; Gets Eliminated</h3>
+                <div class="change-item"><span class="ci-icon">&#x1F4D2;</span><div class="ci-text"><strong>Physical Register Book</strong> &mdash; replaced by app. No more Sunil/Omprakash manual register</div></div>
+                <div class="change-item"><span class="ci-icon">&#x1F4CB;</span><div class="ci-text"><strong>2nd Copy to Register Staff</strong> &mdash; no register = no need for 2nd copy routing</div></div>
+                <div class="change-item"><span class="ci-icon">&#x1F4BB;</span><div class="ci-text"><strong>Manual Excel Data Entry</strong> &mdash; app IS the database. No separate Excel</div></div>
+                <div class="change-item"><span class="ci-icon">&#x1F4C7;</span><div class="ci-text"><strong>Paper Hajri Cards</strong> &mdash; digital attendance auto-built from parchi entries</div></div>
+                <div class="change-item"><span class="ci-icon">&#x1F4C5;</span><div class="ci-text"><strong>Month-end Hajri Collection &amp; Cross-check</strong> &mdash; already in system, no collection</div></div>
+                <div class="change-item"><span class="ci-icon">&#x1F9EE;</span><div class="ci-text"><strong>Manual Salary &amp; Billing Sheets</strong> &mdash; auto-generated from app data</div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 4: APP SCREENS                       -->
+<!-- ============================================ -->
+<div class="section" id="app">
+    <div class="container">
+        <div class="section-header">
+            <h2>How the App Will Look</h2>
+            <p>Clean, simple interface. Office staff enters parchi data &mdash; everything else is automatic.</p>
+        </div>
+
+        <!-- Dashboard + Parchi Entry -->
+        <div class="phone-grid">
+            <!-- Dashboard -->
+            <div class="phone-wrap">
+                <h3>&#x1F4CA; Dashboard <span class="badge badge-view">Home Screen</span></h3>
+                <div class="phone">
+                    <div class="phone-screen">
+                        <div class="phone-statusbar"><span>1:36 PM</span><span>&#x1F4F6; 100%</span></div>
+                        <div class="phone-header" style="background: linear-gradient(135deg, #1e40af, #7c3aed); color: #fff; border: none;">
+                            <h4 style="color:#fff;">Good Morning</h4>
+                            <div class="ph-sub" style="color:#c7d2fe;">28 May 2026 &mdash; Daily Overview</div>
+                        </div>
+                        <div class="d-stats">
+                            <div class="d-stat"><div class="d-stat-num">12</div><div class="d-stat-label">Parchis Today</div></div>
+                            <div class="d-stat"><div class="d-stat-num">8</div><div class="d-stat-label">Active Operators</div></div>
+                            <div class="d-stat"><div class="d-stat-num">450</div><div class="d-stat-label">MT Moved</div></div>
+                            <div class="d-stat"><div class="d-stat-num">980L</div><div class="d-stat-label">Diesel Used</div></div>
+                        </div>
+                        <div class="d-chart">
+                            <div class="d-chart-title">Equipment Utilization</div>
+                            <div class="d-bar-row"><div class="d-bar-label">WL-01</div><div class="d-bar" style="width:80%; background: linear-gradient(90deg, #2563eb, #3b82f6);"><span>80%</span></div></div>
+                            <div class="d-bar-row"><div class="d-bar-label">WL-02</div><div class="d-bar" style="width:60%; background: linear-gradient(90deg, #7c3aed, #8b5cf6);"><span>60%</span></div></div>
+                            <div class="d-bar-row"><div class="d-bar-label">EX-01</div><div class="d-bar" style="width:50%; background: linear-gradient(90deg, #ea580c, #f97316);"><span>50%</span></div></div>
+                            <div class="d-bar-row"><div class="d-bar-label">EX-02</div><div class="d-bar" style="width:70%; background: linear-gradient(90deg, #16a34a, #22c55e);"><span>70%</span></div></div>
+                        </div>
+                        <div class="d-alerts">
+                            <div class="d-alert">&#x26A0;&#xFE0F; 3 Allowances pending approval</div>
+                            <div class="d-alert">&#x26A0;&#xFE0F; 2 Parchis not entered today</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parchi Entry -->
+            <div class="phone-wrap">
+                <h3>&#x1F4DD; Parchi Entry <span class="badge badge-core">Core Screen</span></h3>
+                <div class="phone">
+                    <div class="phone-screen">
+                        <div class="phone-statusbar"><span>1:36 PM</span><span>&#x1F4F6; 100%</span></div>
+                        <div class="phone-header">
+                            <h4>Enter Parchi Data</h4>
+                            <div class="ph-sub">All fields from the physical parchi slip</div>
+                        </div>
+                        <div class="phone-body">
+                            <div style="padding-top: 10px;"></div>
+                            <div class="f-row">
+                                <div class="f-group"><div class="f-label">Parchi Date</div><div class="f-input filled">28/05/2026</div></div>
+                                <div class="f-group"><div class="f-label">Parchi #</div><div class="f-input filled">P-2026-0487</div></div>
+                            </div>
+                            <div class="f-row">
+                                <div class="f-group"><div class="f-label">Operator</div><div class="f-input filled">Ram Kumar</div></div>
+                                <div class="f-group"><div class="f-label">Equipment</div><div class="f-input filled">WL-01 (Wheel Loader)</div></div>
+                            </div>
+                            <div class="f-row">
+                                <div class="f-group"><div class="f-label">Shift</div><div class="f-input filled">Day</div></div>
+                                <div class="f-group"><div class="f-label">Cargo Type</div><div class="f-input filled">NPK</div></div>
+                            </div>
+                            <div class="f-row">
+                                <div class="f-group"><div class="f-label">Party</div><div class="f-input filled">RKT</div></div>
+                                <div class="f-group"><div class="f-label">Godown</div><div class="f-input filled">Godown-A</div></div>
+                            </div>
+                            <div class="f-row">
+                                <div class="f-group"><div class="f-label">Total Hours</div><div class="f-input filled">20.0</div></div>
+                                <div class="f-group"><div class="f-label">Net Hours</div><div class="f-input filled">18.5</div></div>
+                            </div>
+                            <div class="f-row">
+                                <div class="f-group"><div class="f-label">Metric Tons (MT)</div><div class="f-input filled">45.0</div></div>
+                                <div class="f-group"><div class="f-label">Trips</div><div class="f-input filled">7</div></div>
+                            </div>
+                            <div class="f-row">
+                                <div class="f-group"><div class="f-label">Diesel (Litres)</div><div class="f-input filled">140</div></div>
+                                <div class="f-group"><div class="f-label">Movement</div><div class="f-input filled">Site A &rarr; Godown B</div></div>
+                            </div>
+                            <div class="f-auto-box">
+                                &#x2705; Attendance will be auto-recorded for <strong>Ram Kumar</strong> on 28/05/2026<br>
+                                &#x2705; Allowance = <strong>&#x20B9;650</strong> (Wheel Loader / Senior) &mdash; queued for approval
+                            </div>
+                            <div class="f-btn-row">
+                                <div class="f-btn secondary">Clear</div>
+                                <div class="f-btn primary">Save &amp; Add Next</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance + Allowance -->
+        <div class="phone-grid" style="margin-top: 16px;">
+            <!-- Attendance -->
+            <div class="phone-wrap">
+                <h3>&#x1F4C5; Attendance <span class="badge badge-auto">Auto-Generated</span></h3>
+                <div class="phone">
+                    <div class="phone-screen">
+                        <div class="phone-statusbar"><span>1:36 PM</span><span>&#x1F4F6; 100%</span></div>
+                        <div class="phone-header">
+                            <h4>Attendance &mdash; May 2026</h4>
+                            <div class="ph-sub">Auto-generated from parchi entries. No manual Hajri needed.</div>
+                        </div>
+                        <div class="att-grid">
+                            <table class="att-table">
+                                <thead>
+                                    <tr><th class="name" style="text-align:left;">Operator</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>...</th><th>28</th><th>Days</th><th>Hrs</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td class="name">Ram Kumar</td><td class="att-p">P</td><td class="att-p">P</td><td class="att-p">P</td><td class="att-a">A</td><td class="att-p">P</td><td class="att-p">P</td><td class="att-a">A</td><td>...</td><td class="att-p">P</td><td class="att-total">22</td><td class="att-total">420</td></tr>
+                                    <tr><td class="name">Suresh P.</td><td class="att-p">P</td><td class="att-a">A</td><td class="att-p">P</td><td class="att-p">P</td><td class="att-p">P</td><td class="att-a">A</td><td class="att-p">P</td><td>...</td><td class="att-p">P</td><td class="att-total">20</td><td class="att-total">380</td></tr>
+                                    <tr><td class="name">Mohan L.</td><td class="att-p">P</td><td class="att-p">P</td><td class="att-a">A</td><td class="att-p">P</td><td class="att-a">A</td><td class="att-p">P</td><td class="att-p">P</td><td>...</td><td class="att-a">A</td><td class="att-total">18</td><td class="att-total">340</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="padding: 8px 12px; background: #f0fdf4; font-size: 10px; color: #166534; text-align: center;">
+                            <strong>P</strong> = Present (auto from parchi) &nbsp;&nbsp; <strong>A</strong> = Absent &nbsp;&nbsp; | &nbsp;&nbsp; No paper Hajri cards!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Allowance -->
+            <div class="phone-wrap">
+                <h3>&#x1F4B0; Allowance Queue <span class="badge badge-auto">Auto-Calculated</span></h3>
+                <div class="phone">
+                    <div class="phone-screen">
+                        <div class="phone-statusbar"><span>1:36 PM</span><span>&#x1F4F6; 100%</span></div>
+                        <div class="phone-header">
+                            <h4>Allowance Approval</h4>
+                            <div class="ph-sub">Auto-calculated from parchi. Approve &amp; pay in one click.</div>
+                        </div>
+                        <div class="t-filters">
+                            <div class="t-filter active">Pending (3)</div>
+                            <div class="t-filter">Approved</div>
+                            <div class="t-filter">Paid</div>
+                        </div>
+                        <table class="t-table">
+                            <thead><tr><th>Date</th><th>Operator</th><th>Equip</th><th>Amount</th><th>Status</th></tr></thead>
+                            <tbody>
+                                <tr><td>28/05</td><td><strong>Ram Kumar</strong></td><td>WL-01</td><td><strong>&#x20B9;650</strong></td><td><span class="t-status pending">Pending</span></td></tr>
+                                <tr><td>28/05</td><td><strong>Suresh P.</strong></td><td>EX-03</td><td><strong>&#x20B9;600</strong></td><td><span class="t-status pending">Pending</span></td></tr>
+                                <tr><td>28/05</td><td><strong>Mohan L.</strong></td><td>WL-02</td><td><strong>&#x20B9;700</strong></td><td><span class="t-status pending">Pending</span></td></tr>
+                                <tr><td>27/05</td><td><strong>Ram Kumar</strong></td><td>WL-01</td><td><strong>&#x20B9;650</strong></td><td><span class="t-status approved">Approved</span></td></tr>
+                                <tr><td>27/05</td><td><strong>Suresh P.</strong></td><td>EX-03</td><td><strong>&#x20B9;600</strong></td><td><span class="t-status paid">Paid</span></td></tr>
+                            </tbody>
+                        </table>
+                        <div class="t-footer">
+                            <div class="t-footer-text">3 pending &bull; Total: &#x20B9;1,950</div>
+                            <div class="f-btn primary" style="flex: none; padding: 6px 14px; font-size: 11px;">Approve All</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Salary Sheet -->
+        <div class="phone-grid" style="margin-top: 16px;">
+            <div class="phone-wrap" style="grid-column: span 2;">
+                <h3>&#x1F4B5; Salary Sheet <span class="badge badge-auto">Auto-Generated</span></h3>
+                <div class="wide-mockup">
+                    <div class="wide-mockup-bar">
+                        <div class="wm-dot r"></div><div class="wm-dot y"></div><div class="wm-dot g"></div>
+                        <div class="wm-title">Salary Sheet &mdash; May 2026</div>
+                    </div>
+                    <div class="wide-mockup-body">
+                        <div class="t-filters">
+                            <div class="t-filter active">May 2026</div>
+                            <div class="t-filter">All Operators</div>
+                            <div class="t-filter" style="margin-left:auto; background: var(--blue); color: #fff; border-color: var(--blue);">&#x1F4E4; Export Excel</div>
+                        </div>
+                        <table class="t-table">
+                            <thead><tr><th>Operator</th><th>Days Worked</th><th>Total Hours</th><th>Gross Salary</th><th>Advance</th><th>Deductions</th><th>Net Salary</th><th>Status</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>Ram Kumar</strong></td><td>22</td><td>420</td><td>&#x20B9;33,000</td><td style="color:#dc2626">-&#x20B9;5,000</td><td style="color:#dc2626">-&#x20B9;500</td><td><strong>&#x20B9;27,500</strong></td><td><span class="t-status approved">Approved</span></td></tr>
+                                <tr><td><strong>Suresh P.</strong></td><td>20</td><td>380</td><td>&#x20B9;30,000</td><td style="color:#dc2626">-&#x20B9;2,000</td><td>&#x20B9;0</td><td><strong>&#x20B9;28,000</strong></td><td><span class="t-status approved">Approved</span></td></tr>
+                                <tr><td><strong>Mohan L.</strong></td><td>18</td><td>340</td><td>&#x20B9;27,000</td><td>&#x20B9;0</td><td style="color:#dc2626">-&#x20B9;1,000</td><td><strong>&#x20B9;26,000</strong></td><td><span class="t-status draft">Draft</span></td></tr>
+                                <tr><td><strong>Arjun S.</strong></td><td>24</td><td>460</td><td>&#x20B9;36,000</td><td style="color:#dc2626">-&#x20B9;3,000</td><td style="color:#dc2626">-&#x20B9;500</td><td><strong>&#x20B9;32,500</strong></td><td><span class="t-status approved">Approved</span></td></tr>
+                                <tr class="total"><td><strong>TOTAL (4 operators)</strong></td><td></td><td><strong>1,600</strong></td><td><strong>&#x20B9;1,26,000</strong></td><td><strong>-&#x20B9;10,000</strong></td><td><strong>-&#x20B9;2,000</strong></td><td><strong>&#x20B9;1,14,000</strong></td><td></td></tr>
+                            </tbody>
+                        </table>
+                        <div class="t-footer">
+                            <div class="t-footer-text">Auto-calculated from attendance + configured rates. Accountant adds advances/deductions.</div>
+                            <div style="display:flex; gap:8px;">
+                                <div class="f-btn secondary" style="flex:none; padding:6px 14px; font-size:11px;">Add Deduction</div>
+                                <div class="f-btn primary" style="flex:none; padding:6px 14px; font-size:11px;">Submit for Approval</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 5: BILLING                           -->
+<!-- ============================================ -->
+<div class="section" id="billing-screen">
+    <div class="container">
+        <div class="section-header">
+            <h2>Auto-Generated Billing</h2>
+            <p>Billing calculated automatically using configured cargo rates and hour rates. Filter by company and export.</p>
+        </div>
+
+        <div class="wide-mockup">
+            <div class="wide-mockup-bar">
+                <div class="wm-dot r"></div><div class="wm-dot y"></div><div class="wm-dot g"></div>
+                <div class="wm-title">Billing &mdash; RKT &mdash; May 2026</div>
+            </div>
+            <div class="wide-mockup-body">
+                <div class="t-filters">
+                    <div class="t-filter active">RKT</div>
+                    <div class="t-filter">Shu Shipping</div>
+                    <div class="t-filter">All Companies</div>
+                    <div style="flex:1;"></div>
+                    <div class="t-filter">May 2026</div>
+                    <div class="t-filter" style="background: var(--blue); color: #fff; border-color: var(--blue);">&#x1F4E4; Export Excel</div>
+                    <div class="t-filter" style="background: #dc2626; color: #fff; border-color: #dc2626;">&#x1F4C4; Export PDF</div>
+                </div>
+                <div style="overflow-x: auto;">
+                <table class="t-table">
+                    <thead><tr><th>Date</th><th>Equipment</th><th>Operator</th><th>Cargo</th><th>MT</th><th>Rate/MT</th><th>TON AMT</th><th>Hours</th><th>Rate/Hr</th><th>HR AMT</th><th>TOTAL</th></tr></thead>
+                    <tbody>
+                        <tr><td>01/05</td><td>WL-01</td><td>Ram Kumar</td><td>NPK</td><td>45</td><td>&#x20B9;400</td><td>&#x20B9;18,000</td><td>20</td><td>&#x20B9;1,500</td><td>&#x20B9;30,000</td><td><strong>&#x20B9;48,000</strong></td></tr>
+                        <tr><td>02/05</td><td>WL-01</td><td>Ram Kumar</td><td>DAP</td><td>30</td><td>&#x20B9;480</td><td>&#x20B9;14,400</td><td>18</td><td>&#x20B9;1,500</td><td>&#x20B9;27,000</td><td><strong>&#x20B9;41,400</strong></td></tr>
+                        <tr><td>03/05</td><td>EX-03</td><td>Suresh P.</td><td>IRON</td><td>55</td><td>&#x20B9;530</td><td>&#x20B9;29,150</td><td>22</td><td>&#x20B9;1,500</td><td>&#x20B9;33,000</td><td><strong>&#x20B9;62,150</strong></td></tr>
+                        <tr><td>04/05</td><td>WL-02</td><td>Mohan L.</td><td>MOP</td><td>40</td><td>&#x20B9;500</td><td>&#x20B9;20,000</td><td>19</td><td>&#x20B9;1,500</td><td>&#x20B9;28,500</td><td><strong>&#x20B9;48,500</strong></td></tr>
+                        <tr><td>05/05</td><td>WL-01</td><td>Arjun S.</td><td>APL</td><td>38</td><td>&#x20B9;450</td><td>&#x20B9;17,100</td><td>20</td><td>&#x20B9;1,500</td><td>&#x20B9;30,000</td><td><strong>&#x20B9;47,100</strong></td></tr>
+                        <tr class="total"><td colspan="4"><strong>TOTAL</strong></td><td><strong>208</strong></td><td></td><td><strong>&#x20B9;98,650</strong></td><td><strong>99</strong></td><td></td><td><strong>&#x20B9;1,48,500</strong></td><td><strong>&#x20B9;2,47,150</strong></td></tr>
+                    </tbody>
+                </table>
+                </div>
+                <div style="padding: 12px 16px; background: #f0fdf4; border-top: 1px solid #bbf7d0; display: flex; gap: 24px; font-size: 12px; color: #166534; flex-wrap: wrap;">
+                    <div><strong>Formula:</strong> TON AMT = MT &times; Cargo Rate</div>
+                    <div><strong>Formula:</strong> HOUR AMT = Net Hours &times; Hour Rate (Association)</div>
+                    <div><strong>TOTAL</strong> = TON AMT + HOUR AMT</div>
+                </div>
+                <div class="t-footer">
+                    <div class="t-footer-text"><span class="t-status draft">Draft</span> &nbsp; Ready for manager approval</div>
+                    <div style="display:flex; gap:8px;">
+                        <div class="f-btn primary" style="flex:none; padding:6px 14px; font-size:11px;">Submit for Approval</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rate config preview -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 24px;">
+            <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 20px;">
+                <div style="font-size: 13px; font-weight: 800; color: var(--text); margin-bottom: 12px;">Cargo Rates (Configurable in App)</div>
+                <table class="t-table" style="font-size: 12px;">
+                    <thead><tr><th>Cargo</th><th>Rate/MT</th><th>Effective From</th></tr></thead>
+                    <tbody>
+                        <tr><td>NPK</td><td><strong>&#x20B9;400</strong></td><td>01/01/2026</td></tr>
+                        <tr><td>DAP</td><td><strong>&#x20B9;480</strong></td><td>01/01/2026</td></tr>
+                        <tr><td>MOP</td><td><strong>&#x20B9;500</strong></td><td>01/01/2026</td></tr>
+                        <tr><td>APL</td><td><strong>&#x20B9;450</strong></td><td>01/01/2026</td></tr>
+                        <tr><td>IRON</td><td><strong>&#x20B9;530</strong></td><td>01/01/2026</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 20px;">
+                <div style="font-size: 13px; font-weight: 800; color: var(--text); margin-bottom: 12px;">Hour Rate (Association) &amp; Allowance Rules</div>
+                <table class="t-table" style="font-size: 12px;">
+                    <thead><tr><th>Config</th><th>Value</th></tr></thead>
+                    <tbody>
+                        <tr><td>Hour Rate (Association)</td><td><strong>&#x20B9;1,500 / hour</strong></td></tr>
+                        <tr><td>Allowance &mdash; Wheel Loader (Senior)</td><td><strong>&#x20B9;650 / day</strong></td></tr>
+                        <tr><td>Allowance &mdash; Excavator (Senior)</td><td><strong>&#x20B9;600 / day</strong></td></tr>
+                        <tr><td>Allowance &mdash; Special / Night</td><td><strong>&#x20B9;700 / day</strong></td></tr>
+                    </tbody>
+                </table>
+                <div style="margin-top: 10px; font-size: 11px; color: var(--text3);">All rates configurable with effective dates. Rate changes auto-applied to billing.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 6: REPORTS                           -->
+<!-- ============================================ -->
+<div class="section" id="reports-screen">
+    <div class="container">
+        <div class="section-header">
+            <h2>One-Click Reports</h2>
+            <p>All 8 reports generated instantly from parchi data. Export as Excel or PDF.</p>
+        </div>
+
+        <div class="phone-grid">
+            <div class="phone-wrap" style="grid-column: span 2;">
+                <div class="wide-mockup">
+                    <div class="wide-mockup-bar">
+                        <div class="wm-dot r"></div><div class="wm-dot y"></div><div class="wm-dot g"></div>
+                        <div class="wm-title">Reports</div>
+                    </div>
+                    <div class="wide-mockup-body">
+                        <div style="padding: 16px 20px; border-bottom: 1px solid var(--border);">
+                            <div style="font-size: 16px; font-weight: 800; color: var(--text);">Reports</div>
+                            <div style="font-size: 12px; color: var(--text3); margin-top: 4px;">Select a report &rarr; Choose period &rarr; Generate &rarr; Export Excel / PDF</div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 20px;">
+                            <div class="r-card"><div class="r-icon">&#x1F4C4;</div><div class="r-title">Party-wise Bill</div><div class="r-desc">Bill per company with line items</div></div>
+                            <div class="r-card"><div class="r-icon">&#x1F4B0;</div><div class="r-title">Driver Allowance</div><div class="r-desc">All allowances per operator</div></div>
+                            <div class="r-card"><div class="r-icon">&#x1F4E6;</div><div class="r-title">Cargo-wise Report</div><div class="r-desc">MT by cargo type</div></div>
+                            <div class="r-card"><div class="r-icon">&#x1F527;</div><div class="r-title">Machine Utilization</div><div class="r-desc">Hours per equipment</div></div>
+                            <div class="r-card"><div class="r-icon">&#x1F4C8;</div><div class="r-title">Machine Productivity</div><div class="r-desc">MT per hour per equip</div></div>
+                            <div class="r-card"><div class="r-icon">&#x1F4CB;</div><div class="r-title">Daily / Monthly</div><div class="r-desc">Summary statements</div></div>
+                            <div class="r-card"><div class="r-icon">&#x26FD;</div><div class="r-title">Diesel Average</div><div class="r-desc">L/hr, L/MT, L/trip</div></div>
+                            <div class="r-card"><div class="r-icon">&#x1F3E2;</div><div class="r-title">Internal Billing</div><div class="r-desc">RKT &amp; Shu Shipping bills</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+    <h2>One App. One Entry. Everything Auto.</h2>
+    <p style="margin-top: 8px;">Field work stays the same. Only office manual work gets replaced.<br>Parchi &rarr; App &rarr; Attendance + Allowance + Salary + Billing + Reports &mdash; all automatic.</p>
+</div>
+
+</body>
+</html>
